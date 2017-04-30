@@ -119,7 +119,7 @@ namespace BeheaderTavern.Scripts.Mobiles
         }
     }
 
-    public class GameActor : MonoBehaviour
+    public class GameActor : Photon.MonoBehaviour
     {
         [SerializeField]
         public ActorProperties actorProps;

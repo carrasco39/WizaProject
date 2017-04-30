@@ -17,12 +17,30 @@ namespace BeheaderTavern.Scripts.Mobiles
 
         void Start()
         {
+            if (!photonView.isMine)
+            {
+                enabled = false;
+                agent.enabled = false;
+            }
             animator = this.GetComponent<Animator>();
         }
 
         void Update()
         {
             this.animator.SetFloat("Speed", agent.velocity.magnitude);
+        }
+
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.isWriting)
+            {
+                stream.SendNext(agent.velocity.magnitude);
+            }
+            else
+            {
+                this.animator.SetFloat("Speed", (float)stream.ReceiveNext());
+            }
         }
     }
 }

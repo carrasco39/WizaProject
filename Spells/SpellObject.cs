@@ -4,7 +4,7 @@ using BeheaderTavern.Scripts.Spells;
 using BeheaderTavern.Scripts.Mobiles;
 using UnityEngine.AI;
 
-public class SpellObject : MonoBehaviour
+public class SpellObject : Photon.MonoBehaviour
 {
     private SpellBase _spell;
     private SpellProperties _props;
@@ -29,8 +29,9 @@ public class SpellObject : MonoBehaviour
             {
                 _durationTimer = 0;
                 collided = false;
-                GameObjectPool.Recycle(this.gameObject);
                 rb.velocity = Vector3.zero;
+                PhotonNetwork.Destroy(this.gameObject);
+                //GameObjectPool.Recycle(this.gameObject);
                 //Destroy(this.gameObject);
             }
         }

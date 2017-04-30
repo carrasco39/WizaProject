@@ -40,9 +40,19 @@ namespace BeheaderTavern.Scripts.Spells
             if (Physics.Raycast(ray, out hit,Mathf.Infinity,layerMask.value))
             {
                 //hit.point.Set(hit.point.x, 1, hit.point.z);
-                var spellObj = GameObjectPool.Spawn(SpellObject.gameObject).GetComponent<SpellObject>();//GameObject.Instantiate<SpellObject>(SpellObject, hit.point, Quaternion.identity);
-                spellObj.transform.localScale = Vector3.one * .5f;
+                SpellObject spellObj = null;
+                if (PhotonNetwork.offlineMode)
+                {
+                    spellObj = GameObjectPool.Spawn(SpellObject.gameObject).GetComponent<SpellObject>();
+                }
+                else
+                {
+                    spellObj = PhotonNetwork.Instantiate(SpellObject.gameObject.name, Vector3.zero, Quaternion.identity, 0).GetComponent<SpellObject>();
+                }   
+                if (!spellObj.photonView.isMine)
+                    spellObj.photonView.TransferOwnership(caster.photonView.ownerId);
                 spellObj.transform.position = hit.point;
+                spellObj.transform.localScale = Vector3.one;
                 spellObj.SetProps(this);
                 spellObj.transform.LookAt(caster.transform.position);
             }
@@ -54,8 +64,18 @@ namespace BeheaderTavern.Scripts.Spells
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 10000))
             {
-                var spellObj = GameObject.Instantiate<SpellObject>(SpellObject, hit.point, Quaternion.identity);
-
+                SpellObject spellObj = null;
+                if (PhotonNetwork.offlineMode)
+                {
+                    spellObj = GameObjectPool.Spawn(SpellObject.gameObject).GetComponent<SpellObject>();
+                }
+                else
+                {
+                  spellObj = PhotonNetwork.Instantiate(SpellObject.gameObject.name, Vector3.zero, Quaternion.identity, 0).GetComponent<SpellObject>();
+                }    
+                if (!spellObj.photonView.isMine)
+                    spellObj.photonView.TransferOwnership(caster.photonView.ownerId);
+                spellObj.transform.position = hit.point;
                 spellObj.SetProps(this);
                 spellObj.transform.LookAt(caster.transform.position);
             }

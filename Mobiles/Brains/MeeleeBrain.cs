@@ -19,10 +19,15 @@ namespace BeheaderTavern.Scripts.Mobiles.Brains
             if(attackCoolDown <= 0 && m_creature.InRange(m_target,targetDistance))
             {
                 attackCoolDown = 2f;
-                m_creature.animator.SetTrigger("MeeleeAttack");
+                photonView.RPC("AnimateMeeleeAttack", PhotonTargets.All);
                 m_creature.agent.ResetPath();
                 m_creature.agent.velocity = Vector3.zero;
             }
+        }
+        [PunRPC]
+        public void AnimateMeeleeAttack()
+        {
+            m_creature.animator.SetTrigger("MeeleeAttack");
         }
 
         public void Update()

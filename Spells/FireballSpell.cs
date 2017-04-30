@@ -2,6 +2,7 @@
 using BeheaderTavern.Scripts.Mobiles;
 using BeheaderTavern.Scripts.Enums;
 using BeheaderTavern.Scripts.Interfaces;
+using System.Collections;
 
 namespace BeheaderTavern.Scripts.Spells
 {
@@ -12,6 +13,7 @@ namespace BeheaderTavern.Scripts.Spells
 
         private SpellObject _spellObject;
         private GameActor _caster;
+
         public FireballSpell()
         {
             SpellProps = new SpellProperties
@@ -48,25 +50,45 @@ namespace BeheaderTavern.Scripts.Spells
         public override void Cast(GameActor caster, Vector3 target)
         {
             _caster = caster;
-            var spellObj = GameObjectPool.Spawn(SpellObject.gameObject).GetComponent<SpellObject>();//GameObject.Instantiate<SpellObject>(SpellObject, caster.transform.position, Quaternion.identity);
-            spellObj.transform.localScale = Vector3.one * 0.2f;
-            spellObj.transform.position = caster.transform.position;
-            spellObj.SetProps(this);
-            spellObj.transform.LookAt(target);
-            spellObj.rb.AddForce(spellObj.transform.forward * 1000f);
-            _spellObject = spellObj;
+            if (!PhotonNetwork.offlineMode)
+            {
+                _spellObject = PhotonNetwork.Instantiate(SpellObject.name, 
+                    Vector3.zero, Quaternion.identity, 0)
+                    .GetComponent<SpellObject>();
+            }
+            else
+            {
+                _spellObject = GameObjectPool.Spawn(SpellObject.gameObject).GetComponent<SpellObject>();
+            }
+            _spellObject.SetProps(this);
+            if (!_spellObject.photonView.isMine)
+                _spellObject.photonView.TransferOwnership(_caster.photonView.ownerId);
+            _spellObject.transform.position = caster.transform.position + caster.transform.forward * 1.5f;
+            _spellObject.transform.localScale = Vector3.one;
+            _spellObject.transform.LookAt(target);
+            _spellObject.StartCoroutine(MoveSpell());
+
         }
 
         public override void Cast(GameActor caster)
         {
+            
         }
 
         #endregion
 
+        private IEnumerator MoveSpell()
+        {
+            _spellObject.transform.position += _spellObject.transform.forward * 40f * Time.deltaTime;
+            yield return new WaitForSeconds(1f / 60f);
+            yield return MoveSpell();
+        }
+
         public override void OnTriggerEnter(Collider col)
         {
-            if((col.GetComponent<GameActor>() && col.gameObject != _caster.gameObject ) || col.tag == "Obstacle")
+            if ((col.GetComponent<GameActor>() && col.gameObject != _caster.gameObject) || col.tag == "Obstacle")
             {
+                _spellObject.StopAllCoroutines();
                 _spellObject.collided = true;
             }
         }

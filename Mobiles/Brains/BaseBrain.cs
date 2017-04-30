@@ -23,7 +23,7 @@ namespace BeheaderTavern.Scripts.Mobiles.Brains
     }
 
     [System.Serializable]
-    public class BaseBrain : MonoBehaviour
+    public class BaseBrain : Photon.MonoBehaviour
     {
         public EAI_State state;
         protected BaseCreature m_creature;
@@ -38,7 +38,8 @@ namespace BeheaderTavern.Scripts.Mobiles.Brains
         public virtual void Start()
         {
             m_creature = GetComponent<BaseCreature>();
-            StartCoroutine(Think());
+            if (photonView.isMine)
+                StartCoroutine(Think());
         }
 
         public virtual void Update()

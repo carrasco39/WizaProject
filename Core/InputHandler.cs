@@ -33,7 +33,7 @@ namespace BeheaderTavern.Scripts.Core
 
         public void HandleInput()
         {
-            var player = GameManager.instance.currentActor as PlayerActor;
+            var player = GameManager.instance.PlayerActor as PlayerActor;
 
             if(_oneClicked)
             {

@@ -5,11 +5,30 @@ using BeheaderTavern.Scripts.Mobiles;
 using BeheaderTavern.Scripts.Mobiles.Player;
 
 namespace BeheaderTavern.Scripts.Core
-{ 
+{
     public class GameManager : MonoBehaviour
     {
-        private InputHandler inputHandler;
-        public GameActor currentActor;
+
+        private RtsCamera _rtsCam;
+        private InputHandler _inputHandler;
+        private GameActor _playerActor;
+
+        public GameActor PlayerActor
+        { 
+            get
+            {
+                return _playerActor;
+            }
+            set
+            {
+                _playerActor = value;
+                if(_rtsCam == null)
+                {
+                    _rtsCam = Camera.main.GetComponent<RtsCamera>();
+                }
+                _rtsCam.Follow(_playerActor.transform);
+            }
+        }
         #region SINGLETON
 
         private static GameManager instance_;
@@ -47,32 +66,26 @@ namespace BeheaderTavern.Scripts.Core
         #endregion
 
 
-
         #region MONOBEHAVIOR CALLBACKS
+
         // Use this for initialization
         private void Start()
         {
-            currentActor = (GameActor)FindObjectOfType<PlayerActor>();
-            inputHandler = new InputHandler();
-        
+            _inputHandler = new InputHandler();
+            _rtsCam = Camera.main.GetComponent<RtsCamera>();
         	
         }
 	
         // Update is called once per frame
         private void Update()
         {
-            if (inputHandler != null)
-                inputHandler.HandleInput();
+            if (_inputHandler != null && PlayerActor != null)
+                _inputHandler.HandleInput();
         }
 
         #endregion
 
         #region public methods
-
-        public void SetCurrentActor(GameActor actor)
-        {
-            currentActor = actor;
-        }
 
         #endregion
     }

@@ -4,11 +4,13 @@ using UnityEngine.AI;
 using System.Collections.Generic;
 using BeheaderTavern.Scripts.Interfaces;
 using BeheaderTavern.Scripts.Commands;
+using BeheaderTavern.Scripts.Core;
 
 namespace BeheaderTavern.Scripts.Mobiles.Player
 {
     public class PlayerActor : GameActor
     {
+
         public enum EState : byte
         {
             STATE_IDLE,
@@ -23,7 +25,6 @@ namespace BeheaderTavern.Scripts.Mobiles.Player
         public Animator animator;
         public EState state;
 
-        private RtsCamera _rtsCam;
 
 
 
@@ -34,27 +35,31 @@ namespace BeheaderTavern.Scripts.Mobiles.Player
         public PlayerSpellSelector playerSpellSelector;
 
 
-
-
         private void Start()
         {
-
-            
             agent = GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
-            _rtsCam = Camera.main.GetComponent<RtsCamera>();
 
+            if(PhotonNetwork.offlineMode)
+            {
+                GameManager.instance.PlayerActor = this;
+            }
 
-            agent.speed = actorProps.MaxSpeed;
+            if (!PhotonNetwork.offlineMode && !photonView.isMine)
+            {
+                this.enabled = false;
+            
+            }
+            else
+            {
+                agent.speed = actorProps.MaxSpeed;
 
-            playerDash.Start(this);
-            playerMovement.Start(this);
-            playerCastSpell.Start(this);
-            playerTarget.Start(this);
-            playerSpellSelector.Start(this);
-            _rtsCam.Follow(this.transform, false);
-
-
+                playerDash.Start(this);
+                playerMovement.Start(this);
+                playerCastSpell.Start(this);
+                playerTarget.Start(this);
+                playerSpellSelector.Start(this);
+            }
         }
 
 

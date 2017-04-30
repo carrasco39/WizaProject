@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using BeheaderTavern.Scripts.Network;
 
 public class GameObjectPool {
 
@@ -17,7 +18,7 @@ public class GameObjectPool {
 	static public int hardlimit = -1;
 
 	//Create an object to make the parent of all the pooled objects
-	static GameObject objectParent = new GameObject("PoolManager");
+    static GameObject objectParent = new GameObject("PoolManager",typeof(PhotonPoolBridge));
 
 	static Dictionary<string, Pool> pools = new Dictionary<string, Pool>();
 
