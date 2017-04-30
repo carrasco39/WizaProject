@@ -12,11 +12,11 @@ public class PhotonDebugTest : Photon.MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        
         var request = new LoginWithEmailAddressRequest
         {
             Email = "henrique.carrasco.1@gmail.com",
             Password = "882288",
+
                
         };
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnFail);
@@ -60,9 +60,6 @@ public class PhotonDebugTest : Photon.MonoBehaviour
 
 
     #region Photon Callbacks
-    void OnCustomAuthenticationResponse(Dictionary<string,object> data)
-    {
-    }
     void OnCustomAuthenticationFailed(string debugMessage)
     {
         Debug.LogError(debugMessage);
@@ -71,6 +68,7 @@ public class PhotonDebugTest : Photon.MonoBehaviour
     void OnJoinedLobby()
     {
         RoomOptions room = new RoomOptions();
+        room.EmptyRoomTtl = 3600000;
         room.MaxPlayers = 0;
         PhotonNetwork.JoinOrCreateRoom("teste", room, TypedLobby.Default);
     }
